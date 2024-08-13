@@ -3,6 +3,7 @@ These are the scripts to reproduce the results in the manuscript *"Uncertainty i
 
 If you use this implementation in your academic projects, please cite this paper.
 
+The latest release is permanently stored in Zenodo: [![DOI](https://zenodo.org/badge/801931120.svg)](https://zenodo.org/doi/10.5281/zenodo.13312195)
 
 
 This project introduces a method for uncertainty estimation despite non-normal errors, applied to a cardiovascular model. The method is validated by creating 100 bootstraps of simulated 4D flow MRI and cuff pressure data with added sources of errors and comparing the resulting model uncertainty with the true values. The method is also applied to a real clinical dataset.
