@@ -34,7 +34,7 @@ paramNamesPlotNice = {'Caa', 'Rao','m2_L_V','ksystLV','EmaxLA','Cpvc'};
 
 
 experimentNames = {'E_dataP78','E_dataP1','E_dataP3','E_dataP24','E_dataP36','E_dataP33'};
-plotNames = {'Control 1','Control 2','Control 3','T2D+HT 1','T2D+HT 2','T2D+HT 3'};
+plotNames = {'C1','C2','C3','P1','P2','P3'};
 
 units.param = {'ml/mmHg','mmHg*s/ml','mmHg*s/ml','mmHg*s^2/ml','mmHg*s/ml',...
     'ml/mmHg','cm^2','ml/mmHg','ml/mmHg','ml/mmHg','ml/mmHg','ml/mmHg',...
@@ -156,7 +156,6 @@ for i = 1:length(paramNamesPlot)
             end
             if lb(p,e) > ub(p,comp) || ub(p,e) < lb(p,comp) %no overlapping confidence intervals, definetely different between these subjects
                 signp{e,comp} = '**';
-                % sign(comp,e) = '**';
             elseif middlep > ub(p,comp) || middlep < lb(p,comp) %less than half overlapping, probably different (~ p=0.05)
                 signp{e,comp} = '*';
             else % overlapping more than half, probably not different ( ~ p > 0.05)
@@ -168,6 +167,7 @@ for i = 1:length(paramNamesPlot)
 end
 
 %% Plot results figure for publication
+linespace=0.05;
 darkpurple = [0.9 0.5 0.9].*0.4;
 lightpurple = [1 0.7 1];
 l = length(experimentNames);
@@ -177,25 +177,35 @@ letters = 'A':'Z';
 figure('Name','Fig7_ProfileLikelihood_clinicalexample')
 set(gcf,'Color','white')
 xdim_CM = 17;
-ydim_CM = 12+5+3;
+ydim_CM = 12+3; 
 set(gcf,'Units','centimeters','Position',[0 0 xdim_CM ydim_CM])
 set(gcf,'PaperUnits', 'centimeters', 'PaperSize', [xdim_CM, ydim_CM])
-tiledlayout(4,6,'TileSpacing','loose','Padding','compact')
+tiledlayout(3,12,'TileSpacing','loose','Padding','compact')
 
+%example
+nexttile([1,3])
+axis('off')
+
+% results
 for i = 1:length(paramNamesPlot)
     p = find(ismember(paramNames,paramNamesPlot{i}));
+    if i == 4
+        nexttile([1,3]);
+        axis('off')
+    end
     ax1=nexttile([1,3]);
     hold on
     ylabel([paramNamesPlotNice{i} ' (' units.param{p} ')'])    
     for e = 1:length(experimentNames)
+        xl=xline(e,':','Color',[0.1 0.1 0.1],'linewidth',0.8);
         middlep = lb(p,e)+ ((ub(p,e)-lb(p,e))/2);
         sd = (ub(p,e)-middlep) / 1.96; %95% conf interval corresponds to 1.96 sd
         if e > 3 % patient
-            errorbar(e,middlep,sd,'.','color',purplegradient(end,:),'linewidth',2)
-            plot(e,bestparam(e,p),'o','color',purplegradient(end,:),'MarkerFaceColor',purplegradient(end,:),'MarkerSize',3)
+            pe=errorbar(e,middlep,sd,'.','color',darkpurple,'linewidth',1.1,'markersize',1);
+            pb=plot(e,bestparam(e,p),'o','color',darkpurple,'MarkerFaceColor',darkpurple,'MarkerSize',3);
         else % control
-            errorbar(e,middlep,sd,'.','color',purplegradient(1,:),'linewidth',2)
-            plot(e,bestparam(e,p),'o','color',purplegradient(1,:),'MarkerFaceColor',purplegradient(1,:),'MarkerSize',3)
+            ce=errorbar(e,middlep,sd,'.','color',lightpurple.*0.9,'linewidth',1.1,'markersize',1);
+            cb=plot(e,bestparam(e,p),'o','color',lightpurple.*0.9,'MarkerFaceColor',lightpurple.*0.9,'MarkerSize',3);
         end
     end
     xticks(1:length(plotNames))
@@ -215,17 +225,24 @@ for i = 1:length(paramNamesPlot)
         y1 = min(lb(p,:))*0.95;
     end
     yticks([y1 y2]);
-    yd = 0.05*(length(comps)-1) + 1;
+    s=strcmp(sign{i},'**');
+    numsign = sum(s(:));
+    yd = linespace*(numsign) + 1 + (linespace*0.9)*length(experimentNames);
     ymax = max(ub(p,:))*(yd+0.02)*1.01;
     ymax = max(max(ub(p,:))*1.05,ymax);
     ylim([min(lb(p,:))*0.95,ymax])
 
     %significance
+    yd=1;
+    startingc = 1;
     for c = 1:length(comps)
-        yd = 0.05*(c-1) + 1;
         if strcmp(sign{i}(comps{c}(1),comps{c}(2)),'**')
-            plot(comps{c},[max(ub(p,:))*yd,max(ub(p,:))*yd],'k-')
-            plot(mean(comps{c}),max(ub(p,:))*(yd+0.02),'k*','markersize',4,'linewidth',0.5)
+            if startingc ~= comps{c}(1)
+                yd = yd+linespace;
+            end
+            startingc = comps{c}(1);
+            yd = yd+linespace;
+            psign=plot(comps{c},[max(ub(p,:))*yd,max(ub(p,:))*yd],'k-');
         end
     end
     set(gca,'FontSize',9,'FontName','Calibri')
@@ -233,33 +250,37 @@ for i = 1:length(paramNamesPlot)
     ax1.TitleHorizontalAlignment = 'left';
 
     if i ==1
-        legend({'Standard deivation (sd)','Best fit to data','No overlapping CI'},'Location','Northwest')
+        legend([xl,cb,ce,pb,pe,psign],...
+            {sprintf('C: control\nP: HT+T2D'),'Standard deivation (C)','Best fit to data (C)','Standard deivation (P)','Best fit to data (P)','No overlapping CI'},...
+            'Position',[0.02 0.415931811460952 0.2 0.19],'box','off')
     end
 end
 lettersend =i;
+
 
 % percent plot
 green = [0 0.55 0.35];
 for i = 1:length(paramNamesPlot)
     p = find(ismember(paramNames,paramNamesPlot{i}));
-    ax1=nexttile;
+    ax1=nexttile([1 2]);
     hold on
     meanbestparam = mean(bestparam(:,p));
     middlep = lb(p,:)+ ((ub(p,:)-lb(p,:))./2);
     sd = (ub(p,:)-middlep) / 1.96; %95% conf interval corresponds to 1.96 sd
     percP = 100* (sd./meanbestparam );
 
-    bar([perc(i),percAll(i)],'FaceColor',green)
-    errorbar([perc(i),percAll(i)],[std(percP),0],'k.')
+    b1=bar(1,perc(i),'FaceColor',[184 84 184]./255);
+    b2=bar(2,percAll(i),'FaceColor',green);
+
+    e1=errorbar([perc(i),percAll(i)],[std(percP),0],'k.');
 
     ylabel(['% of mean ' paramNamesPlotNice{i}])
-    xticks([1,2])
-    xticklabels({'Individual sd','Cohort sd'})
+    xticks([])
     set(gca,'FontSize',9,'FontName','Calibri')
     title(letters(i+lettersend),'FontSize',11,'FontName','Calibri')
     ax1.TitleHorizontalAlignment = 'left';
 end
-
+legend([b1,e1,b2],{sprintf('Individual\nstandard\ndeviation\n '),sprintf('Variation\namong\nindividuals\n '),sprintf('Cohort\nstandard\ndeviation\n ')},'Position',[0.925 0.12 0.05 0.23],'box','off')
 
 %% Save and close all figures
 if saveFigs

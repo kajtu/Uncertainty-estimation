@@ -37,12 +37,12 @@ greenCol = [0 0 0];
 figure('Name',sprintf('True simulated data + %d sampled (%s)',length(estimationData),experimentName))
 set(gcf,'Color','white')
 xdim_CM = 17;
-ydim_CM = 17;
+ydim_CM = 11;
 set(gcf,'Units','centimeters','Position',[0 0 xdim_CM ydim_CM])
 set(gcf,'PaperUnits', 'centimeters', 'PaperSize', [xdim_CM, ydim_CM])
-tiledlayout(3,6,'TileSpacing','loose','Padding','compact')
+tiledlayout(4,6,'TileSpacing','compact','Padding','compact')
 
-nexttile([1,3])
+nexttile([2,2])
 hold on
 for i = 1:length(estimationData)
         plot(estimationData{i}.MV.time,estimationData{i}.MV.mean,'.-','color',colors(i,:),'Markersize',12,'LineWidth',1)
@@ -52,7 +52,7 @@ ylabel('Blood flow in MV (mL/s)')
 xlabel('Time (s)')
 tend = trueData.MV.time(end);
 xlim([0 tend])
-set(gca,'FontSize',10)
+set(gca,'FontSize',8)
 t=title('A','FontSize',12);
 ax = gca;
 ax.TitleHorizontalAlignment = 'left';
@@ -60,7 +60,7 @@ pos = t.Position;
 pos(1)  = pos(1)-0.16;
 t.Position = pos;
 
-nexttile([1,3])
+nexttile([2,2])
 hold on
 for i = 1:length(estimationData)
         est(i)=plot(estimationData{i}.AV.time,estimationData{i}.AV.mean,'.-','color',colors(i,:),'Markersize',12,'LineWidth',1);
@@ -70,10 +70,10 @@ ylabel('Blood flow in AV (mL/s)')
 xlabel('Time (s)')
 n = split(sprintf('Sampled data %dx',1:length(estimationData)),'x');
 legend([est,trueplot],[n(1:end-1);{'True data'}], ...
-    'Position',[0.75395269610321 0.754276960784314 0.22 0.23])
+    'box','off','NumColumns',2,'Position',[0.65 0.798 0.33 0.2])
 
 xlim([0 tend])
-set(gca,'FontSize',10)
+set(gca,'FontSize',8)
 t=title('B','FontSize',12);
 ax = gca;
 ax.TitleHorizontalAlignment = 'left';
@@ -81,41 +81,13 @@ pos = t.Position;
 pos(1)  = pos(1)-0.16;
 t.Position = pos;
 
-nexttile([1,3])
-hold on
-for i = 1:length(estimationData)
-        plot(estimationData{i}.AA.time,estimationData{i}.AA.mean,'.-','color',colors(i,:),'Markersize',12,'LineWidth',1)
-end
-plot(trueData.AA.time,trueData.AA.mean,'o','color',greenCol,'linewidth',2,'Markersize',5)
-ylabel('Blood flow in AA (mL/s)')
-xlabel('Time (s)')
-xlim([0 tend])
-set(gca,'FontSize',10)
-t=title('C','FontSize',12);
-ax = gca;
-ax.TitleHorizontalAlignment = 'left';
-pos = t.Position;
-pos(1)  = pos(1)-0.16;
-t.Position = pos;
+nexttile
+axis off
+nexttile
+axis off
+%---
 
-nexttile([1,3])
-hold on
-for i = 1:length(estimationData)
-        plot(estimationData{i}.PV.time,estimationData{i}.PV.mean,'.-','color',colors(i,:),'Markersize',12,'LineWidth',1)
-end
-plot(trueData.PV.time,trueData.PV.mean,'o','color',greenCol,'linewidth',2,'Markersize',5)
-ylabel('Blood flow in PV (mL/s)')
-xlabel('Time (s)')
-xlim([0 tend])
-set(gca,'FontSize',10)
-t=title('D','FontSize',12);
-ax = gca;
-ax.TitleHorizontalAlignment = 'left';
-pos = t.Position;
-pos(1)  = pos(1)-0.16;
-t.Position = pos;
-
-
+letters = {'i','ii','iii','iv','v','vi'};
 nexttile
 hold on
 for i = 1:step:length(estimationData)
@@ -124,12 +96,12 @@ for i = 1:step:length(estimationData)
 end
 plot(1,trueData.SBP.mean,'o','color',greenCol,'linewidth',2,'Markersize',5)
 plot(2,trueData.DBP.mean,'o','color',greenCol,'linewidth',2,'Markersize',5)
-ylabel('Blood pressure (mmHg)')
+ylabel(sprintf('Blood pressure\n (mmHg)'))
 xticks([1,2])
 xticklabels({'SBP','DBP'})
 xlim([0 3])
-set(gca,'FontSize',10)
-t=title('E','FontSize',12);
+set(gca,'FontSize',8)
+t=title(letters{1},'FontSize',12);
 ax = gca;
 ax.TitleHorizontalAlignment = 'left';
 pos = t.Position;
@@ -137,8 +109,63 @@ pos(1)  = pos(1)-0.31;
 t.Position = pos;
 
 pnames = fieldnames(trueData.parameters);
-letters = 'F':'Z';
-for p = 1:length(pnames)
+p = 1;
+nexttile
+hold on
+for i = 1:length(estimationData)
+    plot(p,estimationData{i}.parameters.(pnames{p}).mean,'.','color',colors(i,:),'linewidth',1,'Markersize',14)
+end
+plot(p,trueData.parameters.(pnames{p}).mean,'o','color',greenCol,'linewidth',2,'Markersize',5)
+ylabel(pnames{p})
+xticks([])
+set(gca,'FontSize',8)
+t=title(letters(p+1),'FontSize',12);
+ax = gca;
+ax.TitleHorizontalAlignment = 'left';
+pos = t.Position;
+pos(1)  = pos(1)-1.5;
+t.Position = pos;
+
+%---
+
+nexttile([2,2])
+hold on
+for i = 1:length(estimationData)
+    plot(estimationData{i}.AA.time,estimationData{i}.AA.mean,'.-','color',colors(i,:),'Markersize',12,'LineWidth',1)
+end
+plot(trueData.AA.time,trueData.AA.mean,'o','color',greenCol,'linewidth',2,'Markersize',5)
+ylabel('Blood flow in AA (mL/s)')
+xlabel('Time (s)')
+xlim([0 tend])
+set(gca,'FontSize',8)
+t=title('C','FontSize',12);
+ax = gca;
+ax.TitleHorizontalAlignment = 'left';
+pos = t.Position;
+pos(1)  = pos(1)-0.16;
+t.Position = pos;
+
+nexttile([2,2])
+hold on
+for i = 1:length(estimationData)
+        plot(estimationData{i}.PV.time,estimationData{i}.PV.mean,'.-','color',colors(i,:),'Markersize',12,'LineWidth',1)
+end
+plot(trueData.PV.time,trueData.PV.mean,'o','color',greenCol,'linewidth',2,'Markersize',5)
+ylabel('Blood flow in PV (mL/s)')
+xlabel('Time (s)')
+xlim([0 tend])
+set(gca,'FontSize',8)
+t=title('D','FontSize',12);
+ax = gca;
+ax.TitleHorizontalAlignment = 'left';
+pos = t.Position;
+pos(1)  = pos(1)-0.16;
+t.Position = pos;
+
+
+%----
+
+for p = 2:length(pnames)
     nexttile
     hold on
     for i = 1:length(estimationData)
@@ -147,8 +174,8 @@ for p = 1:length(pnames)
     plot(p,trueData.parameters.(pnames{p}).mean,'o','color',greenCol,'linewidth',2,'Markersize',5)
     ylabel(pnames{p})
     xticks([])
-    set(gca,'FontSize',10)
-    t=title(letters(p),'FontSize',12);
+    set(gca,'FontSize',8)
+    t=title(letters(p+1),'FontSize',12);
     ax = gca;
     ax.TitleHorizontalAlignment = 'left';
     pos = t.Position;

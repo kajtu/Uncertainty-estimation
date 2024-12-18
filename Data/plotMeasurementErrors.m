@@ -59,16 +59,16 @@ for n = 1:length(experimentNames)
     SV_PV_randonly(n) =  trapz(datan.MV.time, trueData.PV.mean + e.pv.random);
 
     %add only offset errors and calculate stroke volume
-    SV_MV_offsetonly(n) =  trapz(datan.MV.time, trueData.MV.mean + e.mv.systematic );%+ e.RR.MV
-    SV_AV_offsetonly(n) =  trapz(datan.MV.time, trueData.AV.mean + e.av.systematic);% + e.RR.AV
-    SV_AA_offsetonly(n) =  trapz(datan.MV.time, trueData.AA.mean + e.aa.systematic);% + e.RR.AA
-    SV_PV_offsetonly(n) =  trapz(datan.MV.time, trueData.PV.mean + e.pv.systematic);% + e.RR.PV
+    SV_MV_offsetonly(n) =  trapz(datan.MV.time, trueData.MV.mean + e.mv.systematic );
+    SV_AV_offsetonly(n) =  trapz(datan.MV.time, trueData.AV.mean + e.av.systematic);
+    SV_AA_offsetonly(n) =  trapz(datan.MV.time, trueData.AA.mean + e.aa.systematic);
+    SV_PV_offsetonly(n) =  trapz(datan.MV.time, trueData.PV.mean + e.pv.systematic);
 
     %add only systematic errors and calculate stroke volume
-    SV_MV_systonly(n) =  trapz(datan.MV.time, trueData.MV.mean + e.mv.systematic + e.RR.MV);%
-    SV_AV_systonly(n) =  trapz(datan.MV.time, trueData.AV.mean + e.av.systematic + e.RR.AV);% 
-    SV_AA_systonly(n) =  trapz(datan.MV.time, trueData.AA.mean + e.aa.systematic + e.RR.AA);%
-    SV_PV_systonly(n) =  trapz(datan.MV.time, trueData.PV.mean + e.pv.systematic + e.RR.PV);%
+    SV_MV_systonly(n) =  trapz(datan.MV.time, trueData.MV.mean + e.mv.systematic + e.RR.MV);
+    SV_AV_systonly(n) =  trapz(datan.MV.time, trueData.AV.mean + e.av.systematic + e.RR.AV); 
+    SV_AA_systonly(n) =  trapz(datan.MV.time, trueData.AA.mean + e.aa.systematic + e.RR.AA);
+    SV_PV_systonly(n) =  trapz(datan.MV.time, trueData.PV.mean + e.pv.systematic + e.RR.PV);
 end
 
 ctot_meanerr = mean(Ctoterr);
@@ -167,7 +167,7 @@ for f = 1:2
 
     t=title(letters(letternum),'FontSize',12);
     ax = gca;
-    ax.TitleHorizontalAlignment = 'left';%TitleFontWeight
+    ax.TitleHorizontalAlignment = 'left';
     pos = t.Position;
     pos(1)  = pos(1)-0.125;
     t.Position = pos;
@@ -182,9 +182,9 @@ for f = 1:2
     [resolutionError,postPrError,smoothingErrorReal,offsetError,allErrors,origFlow,randerrors] = flowerror(f,origflowcurves,origflownames,realRRerrors,rrdata,origTime,trueData);
     % Plot all in one
     RRpos = smoothingErrorReal;
-    RRpos(RRpos<0) = NaN;%0;
+    RRpos(RRpos<0) = NaN;
     RRneg = smoothingErrorReal;
-    RRneg(RRneg>0) = NaN;%0;
+    RRneg(RRneg>0) = NaN;
 
     nexttile
     hold on
@@ -330,8 +330,14 @@ for f = 3:4
 end
 
 %% stroke volumes
-nexttile([2 1])
+swarmwidth = 0.25;
+grey = [0.65 0.65 0.65];
+black = [0.05 0.05 0.05];
+yellow = [0.5 0.5 0.8];
+
+nexttile
 hold on
+yline(0,'-');
 ylabel('Stroke volume error (%)')
 mverrAbs_syst = SV_MV_systonly-trapz(trueData.MV.time,trueData.MV.mean);
 averrAbs_syst = SV_AV_systonly-trapz(trueData.AV.time,trueData.AV.mean);
@@ -341,25 +347,24 @@ mverrAbs_systP = 100*mverrAbs_syst./trapz(trueData.MV.time,trueData.MV.mean);
 averrAbs_systP = 100*averrAbs_syst./trapz(trueData.AV.time,trueData.AV.mean);
 aaerrAbs_systP = 100*aaerrAbs_syst./trapz(trueData.AA.time,trueData.AA.mean);
 pverrAbs_systP = 100*pverrAbs_syst./trapz(trueData.PV.time,trueData.PV.mean);
-swarmchart(1.2.*ones(size(mverrAbs_systP)),mverrAbs_systP,2,[0.5 0.5 0],'*','XJitterWidth',0.10)
-swarmchart(2.2.*ones(size(mverrAbs_systP)),averrAbs_systP,2,[0.5 0.5 0],'*','XJitterWidth',0.10)
-swarmchart(3.2.*ones(size(mverrAbs_systP)),aaerrAbs_systP,2,[0.5 0.5 0],'*','XJitterWidth',0.10)
-ss=swarmchart(4.2.*ones(size(mverrAbs_systP)),pverrAbs_systP,2,[0.5 0.5 0],'*','XJitterWidth',0.10);
+swarmchart((1+swarmwidth).*ones(size(mverrAbs_systP)),mverrAbs_systP,2,yellow,'filled','XJitterWidth',swarmwidth)
+swarmchart((2+swarmwidth).*ones(size(mverrAbs_systP)),averrAbs_systP,2,yellow,'filled','XJitterWidth',swarmwidth)
+swarmchart((3+swarmwidth).*ones(size(mverrAbs_systP)),aaerrAbs_systP,2,yellow,'filled','XJitterWidth',swarmwidth)
+ss=swarmchart((4+swarmwidth).*ones(size(mverrAbs_systP)),pverrAbs_systP,2,yellow,'filled','XJitterWidth',swarmwidth);
 
 mverr = 100*(SV_MV-trapz(trueData.MV.time,trueData.MV.mean))./trapz(trueData.MV.time,trueData.MV.mean);
 averr = 100*(SV_AV-trapz(trueData.AV.time,trueData.AV.mean))./trapz(trueData.AV.time,trueData.AV.mean);
 aaerr = 100*(SV_AA-trapz(trueData.AA.time,trueData.AA.mean))./trapz(trueData.AA.time,trueData.AA.mean);
 pverr = 100*(SV_PV-trapz(trueData.PV.time,trueData.PV.mean))./trapz(trueData.PV.time,trueData.PV.mean);
-s=swarmchart(1.*ones(size(mverr)),mverr,2,[0.5 0.5 1],'*','XJitterWidth',0.10);
-swarmchart(2.*ones(size(mverr)),averr,2,[0.5 0.5 1],'*','XJitterWidth',0.10)
-swarmchart(3.*ones(size(mverr)),aaerr,2,[0.5 0.5 1],'*','XJitterWidth',0.10)
-swarmchart(4.*ones(size(mverr)),pverr,2,[0.5 0.5 1],'*','XJitterWidth',0.10)
-yline(0,'--');
+s=swarmchart(1.*ones(size(mverr)),mverr,2,grey,'filled','XJitterWidth',swarmwidth);
+swarmchart(2.*ones(size(mverr)),averr,2,grey,'filled','XJitterWidth',swarmwidth)
+swarmchart(3.*ones(size(mverr)),aaerr,2,grey,'filled','XJitterWidth',swarmwidth)
+swarmchart(4.*ones(size(mverr)),pverr,2,grey,'filled','XJitterWidth',swarmwidth)
 
-errorbar(1,mean(mverr),std(mverr),'k*','LineWidth',1,'markersize',5)
-errorbar(2,mean(averr),std(averr),'k*','LineWidth',1,'markersize',5)
-errorbar(3,mean(aaerr),std(aaerr),'k*','LineWidth',1,'markersize',5)
-er=errorbar(4,mean(pverr),std(pverr),'k*','LineWidth',1,'markersize',5);
+errorbar(1,mean(mverr),std(mverr),'.','color',black,'LineWidth',1,'markersize',5)
+errorbar(2,mean(averr),std(averr),'.','color',black,'LineWidth',1,'markersize',5)
+errorbar(3,mean(aaerr),std(aaerr),'.','color',black,'LineWidth',1,'markersize',5)
+er=errorbar(4,mean(pverr),std(pverr),'.','color',black,'LineWidth',1,'markersize',5);
 
 mverrAbs_rand = SV_MV_randonly-trapz(trueData.MV.time,trueData.MV.mean);
 averrAbs_rand = SV_AV_randonly-trapz(trueData.AV.time,trueData.AV.mean);
@@ -369,17 +374,23 @@ mverrAbs_randP = 100*mverrAbs_rand./trapz(trueData.MV.time,trueData.MV.mean);
 averrAbs_randP = 100*averrAbs_rand./trapz(trueData.AV.time,trueData.AV.mean);
 aaerrAbs_randP = 100*aaerrAbs_rand./trapz(trueData.AA.time,trueData.AA.mean);
 pverrAbs_randP = 100*pverrAbs_rand./trapz(trueData.PV.time,trueData.PV.mean);
-swarmchart(1.4.*ones(size(mverrAbs_randP)),mverrAbs_randP,2,[0.4 0 0.2],'*','XJitterWidth',0.10)
-swarmchart(2.4.*ones(size(mverrAbs_randP)),averrAbs_randP,2,[0.4 0 0.2],'*','XJitterWidth',0.10)
-swarmchart(3.4.*ones(size(mverrAbs_randP)),aaerrAbs_randP,2,[0.4 0 0.2],'*','XJitterWidth',0.10)
-sr=swarmchart(4.4.*ones(size(mverrAbs_randP)),pverrAbs_randP,2,[0.4 0 0.2],'*','XJitterWidth',0.10);
+swarmchart((1+swarmwidth*2).*ones(size(mverrAbs_randP)),mverrAbs_randP,2,black,'filled','XJitterWidth',swarmwidth)
+swarmchart((2+swarmwidth*2).*ones(size(mverrAbs_randP)),averrAbs_randP,2,black,'filled','XJitterWidth',swarmwidth)
+swarmchart((3+swarmwidth*2).*ones(size(mverrAbs_randP)),aaerrAbs_randP,2,black,'filled','XJitterWidth',swarmwidth)
+sr=swarmchart((4+swarmwidth*2).*ones(size(mverrAbs_randP)),pverrAbs_randP,2,black,'filled','XJitterWidth',swarmwidth);
 
-xticks([1:4])
+xticks([1:4]+swarmwidth)
 xticklabels({'MV','AV','AA','PV'})
 yline(5,'--');
 yline(-5,'--');
+xline(2-swarmwidth,':');
+xline(3-swarmwidth,':');
+xline(4-swarmwidth,':');
 set(gca,'FontSize',9)
-xlim([0.5 4.5])
+xlim([1-swarmwidth 4+swarmwidth*3])
+yticks(-30:10:30)
+ylim([-30,30])
+
 t=title('E','FontSize',12);
 ax = gca;
 ax.TitleHorizontalAlignment = 'left';
@@ -387,9 +398,10 @@ pos = t.Position;
 pos(1)  = pos(1)-0.6;
 t.Position = pos;
 
-
-nexttile([2 1])
+%----
+nexttile%([2 1])
 hold on
+yline(0,'-');
 ylabel('Stroke volume difference (%)')
 diffMVAV_systonly = 100*(SV_MV_systonly-SV_AV_systonly)./mean([SV_MV_systonly,SV_AV_systonly],2);
 diffMVAA_systonly = 100*(SV_MV_systonly-SV_AA_systonly)./mean([SV_MV_systonly,SV_AA_systonly],2);
@@ -397,12 +409,12 @@ diffMVPV_systonly = 100*(SV_MV_systonly-SV_PV_systonly)./mean([SV_MV_systonly,SV
 diffAVAA_systonly = 100*(SV_AV_systonly-SV_AA_systonly)./mean([SV_AV_systonly,SV_AA_systonly],2);
 diffAVPV_systonly = 100*(SV_AV_systonly-SV_PV_systonly)./mean([SV_AV_systonly,SV_PV_systonly],2);
 diffAAPV_systonly = 100*(SV_AA_systonly-SV_PV_systonly)./mean([SV_AA_systonly,SV_PV_systonly],2);
-swarmchart(1.2.*ones(size(diffMVAV_systonly)),diffMVAV_systonly,2,[0.5 0.5 0],'*','XJitterWidth',0.10)
-swarmchart(2.2.*ones(size(diffMVAV_systonly)),diffMVAA_systonly,2,[0.5 0.5 0],'*','XJitterWidth',0.10)
-swarmchart(3.2.*ones(size(diffMVAV_systonly)),diffMVPV_systonly,2,[0.5 0.5 0],'*','XJitterWidth',0.10)
-ss=swarmchart(4.2.*ones(size(diffMVAV_systonly)),diffAVAA_systonly,2,[0.5 0.5 0],'*','XJitterWidth',0.10);
-swarmchart(5.2.*ones(size(diffMVAV_systonly)),diffAVPV_systonly,2,[0.5 0.5 0],'*','XJitterWidth',0.10)
-swarmchart(6.2.*ones(size(diffMVAV_systonly)),diffAAPV_systonly,2,[0.5 0.5 0],'*','XJitterWidth',0.10)
+swarmchart((1+swarmwidth).*ones(size(diffMVAV_systonly)),diffMVAV_systonly,2,yellow,'o','filled','XJitterWidth',swarmwidth)
+swarmchart((2+swarmwidth).*ones(size(diffMVAV_systonly)),diffMVAA_systonly,2,yellow,'o','filled','XJitterWidth',swarmwidth)
+swarmchart((3+swarmwidth).*ones(size(diffMVAV_systonly)),diffMVPV_systonly,2,yellow,'o','filled','XJitterWidth',swarmwidth)
+ss=swarmchart((4+swarmwidth).*ones(size(diffMVAV_systonly)),diffAVAA_systonly,2,yellow,'o','filled','XJitterWidth',swarmwidth);
+swarmchart((5+swarmwidth).*ones(size(diffMVAV_systonly)),diffAVPV_systonly,2,yellow,'o','filled','XJitterWidth',swarmwidth)
+swarmchart((6+swarmwidth).*ones(size(diffMVAV_systonly)),diffAAPV_systonly,2,yellow,'o','filled','XJitterWidth',swarmwidth)
 
 diffMVAV = 100*(SV_MV-SV_AV)./mean([SV_MV,SV_AV],2);
 diffMVAA = 100*(SV_MV-SV_AA)./mean([SV_MV,SV_AA],2);
@@ -411,19 +423,19 @@ diffAVAA = 100*(SV_AV-SV_AA)./mean([SV_AV,SV_AA],2);
 diffAVPV = 100*(SV_AV-SV_PV)./mean([SV_AV,SV_PV],2);
 diffAAPV = 100*(SV_AA-SV_PV)./mean([SV_AA,SV_PV],2);
 
-swarmchart(1.*ones(size(SV_MV)),100*(SV_MV-SV_AV)./SV_MV,2,[0.5 0.5 1],'*','XJitterWidth',0.10)
-swarmchart(2.*ones(size(SV_MV)),100*(SV_MV-SV_AA)./SV_MV,2,[0.5 0.5 1],'*','XJitterWidth',0.10)
-swarmchart(3.*ones(size(SV_MV)),100*(SV_MV-SV_PV)./SV_MV,2,[0.5 0.5 1],'*','XJitterWidth',0.10)
-swarmchart(4.*ones(size(SV_MV)), 100*(SV_AV-SV_AA)./SV_AV,2,[0.5 0.5 1],'*','XJitterWidth',0.10)
-swarmchart(5.*ones(size(SV_MV)), 100*(SV_AV-SV_PV)./SV_AV,2,[0.5 0.5 1],'*','XJitterWidth',0.10)
-swarmchart(6.*ones(size(SV_MV)), 100*(SV_AA-SV_PV)./SV_AA,2,[0.5 0.5 1],'*','XJitterWidth',0.10)
+swarmchart(1.*ones(size(SV_MV)),100*(SV_MV-SV_AV)./SV_MV,2,grey,'filled','XJitterWidth',swarmwidth)
+swarmchart(2.*ones(size(SV_MV)),100*(SV_MV-SV_AA)./SV_MV,2,grey,'filled','XJitterWidth',swarmwidth)
+swarmchart(3.*ones(size(SV_MV)),100*(SV_MV-SV_PV)./SV_MV,2,grey,'filled','XJitterWidth',swarmwidth)
+swarmchart(4.*ones(size(SV_MV)), 100*(SV_AV-SV_AA)./SV_AV,2,grey,'filled','XJitterWidth',swarmwidth)
+swarmchart(5.*ones(size(SV_MV)), 100*(SV_AV-SV_PV)./SV_AV,2,grey,'filled','XJitterWidth',swarmwidth)
+swarmchart(6.*ones(size(SV_MV)), 100*(SV_AA-SV_PV)./SV_AA,2,grey,'filled','XJitterWidth',swarmwidth)
 
-errorbar(1,mean(diffMVAV),std(diffMVAV),'k*','LineWidth',1,'markersize',5)
-errorbar(2,mean(diffMVAA),std(diffMVAA),'k*','LineWidth',1,'markersize',5)
-errorbar(3,mean(diffMVPV),std(diffMVPV),'k*','LineWidth',1,'markersize',5)
-errorbar(4,mean(diffAVAA),std(diffAVAA),'k*','LineWidth',1,'markersize',5)
-errorbar(5,mean(diffAVPV),std(diffAVPV),'k*','LineWidth',1,'markersize',5)
-errorbar(6,mean(diffAAPV),std(diffAAPV),'k*','LineWidth',1,'markersize',5)
+errorbar(1,mean(diffMVAV),std(diffMVAV),'.','color',black,'LineWidth',1,'markersize',5)
+errorbar(2,mean(diffMVAA),std(diffMVAA),'.','color',black,'LineWidth',1,'markersize',5)
+errorbar(3,mean(diffMVPV),std(diffMVPV),'.','color',black,'LineWidth',1,'markersize',5)
+errorbar(4,mean(diffAVAA),std(diffAVAA),'.','color',black,'LineWidth',1,'markersize',5)
+errorbar(5,mean(diffAVPV),std(diffAVPV),'.','color',black,'LineWidth',1,'markersize',5)
+errorbar(6,mean(diffAAPV),std(diffAAPV),'.','color',black,'LineWidth',1,'markersize',5)
 
 diffMVAV_randonly = 100*(SV_MV_randonly-SV_AV_randonly)./mean([SV_MV_randonly,SV_AV_randonly],2);
 diffMVAA_randonly = 100*(SV_MV_randonly-SV_AA_randonly)./mean([SV_MV_randonly,SV_AA_randonly],2);
@@ -431,23 +443,30 @@ diffMVPV_randonly = 100*(SV_MV_randonly-SV_PV_randonly)./mean([SV_MV_randonly,SV
 diffAVAA_randonly = 100*(SV_AV_randonly-SV_AA_randonly)./mean([SV_AV_randonly,SV_AA_randonly],2);
 diffAVPV_randonly = 100*(SV_AV_randonly-SV_PV_randonly)./mean([SV_AV_randonly,SV_PV_randonly],2);
 diffAAPV_randonly = 100*(SV_AA_randonly-SV_PV_randonly)./mean([SV_AA_randonly,SV_PV_randonly],2);
-swarmchart(1.4.*ones(size(diffMVAV_randonly)),diffMVAV_randonly,2,[0.4 0 0.2],'*','XJitterWidth',0.10)
-swarmchart(2.4.*ones(size(diffMVAV_randonly)),diffMVAA_randonly,2,[0.4 0 0.2],'*','XJitterWidth',0.10)
-swarmchart(3.4.*ones(size(diffMVAV_randonly)),diffMVPV_randonly,2,[0.4 0 0.2],'*','XJitterWidth',0.10)
-sr=swarmchart(4.4.*ones(size(diffMVAV_randonly)),diffAVAA_randonly,2,[0.4 0 0.2],'*','XJitterWidth',0.10);
-swarmchart(5.4.*ones(size(diffMVAV_randonly)),diffAVPV_randonly,2,[0.4 0 0.2],'*','XJitterWidth',0.10)
-swarmchart(6.4.*ones(size(diffMVAV_randonly)),diffAAPV_randonly,2,[0.4 0 0.2],'*','XJitterWidth',0.10)
+swarmchart((1+swarmwidth*2).*ones(size(diffMVAV_randonly)),diffMVAV_randonly,2,black,'filled','XJitterWidth',swarmwidth)
+swarmchart((2+swarmwidth*2).*ones(size(diffMVAV_randonly)),diffMVAA_randonly,2,black,'filled','XJitterWidth',swarmwidth)
+swarmchart((3+swarmwidth*2).*ones(size(diffMVAV_randonly)),diffMVPV_randonly,2,black,'filled','XJitterWidth',swarmwidth)
+sr=swarmchart((4+swarmwidth*2).*ones(size(diffMVAV_randonly)),diffAVAA_randonly,2,black,'filled','XJitterWidth',swarmwidth);
+swarmchart((5+swarmwidth*2).*ones(size(diffMVAV_randonly)),diffAVPV_randonly,2,black,'filled','XJitterWidth',swarmwidth)
+swarmchart((6+swarmwidth*2).*ones(size(diffMVAV_randonly)),diffAAPV_randonly,2,black,'filled','XJitterWidth',swarmwidth)
 
 yline(5,'--');
-yline(-5,'--');
-yline(0,'--');
+line = yline(-5,'--');
+% yline(0,'--');
+xline(2-swarmwidth,':');
+xline(3-swarmwidth,':');
+xline(4-swarmwidth,':');
+xline(5-swarmwidth,':');
+xline(6-swarmwidth,':');
 
-xlim([0.5 6.5])
-xticks([1:6])
+xlim([1-swarmwidth 6+swarmwidth*3])
+xticks([1:6]+swarmwidth)
 xticklabels({'MV-AV','MV-AA','MV-PV','AV-AA','AV-PV','AA-PV'})
-legend([s(1);er;sr(1);ss(1)],{'All errors','Mean+-sd of all','Random error',...
-    'Systematic error'},'location','northoutside','Numcolumns',2,...
-    'Position',[0.0872432573356074 0.284542914516151 0.4 0.04])
+yticks(-40:10:40)
+ylim([-40,40])
+legend([s(1);er;sr(1);ss(1);line],{'All errors','Mean+-sd of all errors','Random errors',...
+    'Systematic errors','5% error'},'location','northoutside','Numcolumns',2,...
+    'Position',[0.0461550220414897 0.11602368374692 0.4 0.04])
 set(gca,'FontSize',9)
 t=title('F','FontSize',12);
 ax = gca;

@@ -222,8 +222,8 @@ darkpurple = [0.9 0.5 0.9].*0.4;
 lightpurple = [1 0.7 1];
 purplegradient = [linspace(lightpurple(1),darkpurple(1),l)', linspace(lightpurple(2),darkpurple(2),l)', linspace(lightpurple(3),darkpurple(3),l)'];
 
-selectedParamNames = {'k_diast_LA','m2_LV','Caa'};
-selectedParamNamesPlot = {'k_d_i_a_s_t__L_A','m2_L_V','Caa'};
+selectedParamNames = {'Emin_LA','m2_LV','Caa'};
+selectedParamNamesPlot = {'Emin_L_A','m2_L_V','Caa'};
 figure('Name',['Fig6_methodevaluation_summary_' experimentName])
 set(gcf,'Color','white')
 xdim_CM = 17;
@@ -262,7 +262,7 @@ for i = 1:length(selectedParamNamesPlot)
         end
     end
     xline(trueData.allParameters(p),'--','LineWidth',1.2,'color',[0 0.5 0]);
-    xlabel([paramNamesPlot{ismember(paramNamesPlot,paramNames(p))} ' (value)'])
+    xlabel([selectedParamNamesPlot{ismember(selectedParamNames,paramNames(p))} ' (value)'])
     ylabel('Sampled data n.')
 
     % full PL
@@ -283,7 +283,7 @@ for i = 1:length(selectedParamNamesPlot)
         end
     end
     truep = xline(trueData.allParameters(p),'--','LineWidth',1.2,'color',[0 0.5 0]);
-    xlabel([paramNamesPlot{ismember(paramNamesPlot,paramNames(p))} ' (value)'])
+    xlabel([selectedParamNamesPlot{ismember(selectedParamNames,paramNames(p))} ' (value)'])
     ylabel('Obj. func value')
 end
 legend([okparamp,notokparamp,truep],sprintf('Found true\nvalue'),sprintf('Didn''t find\n true value'),'True value',...

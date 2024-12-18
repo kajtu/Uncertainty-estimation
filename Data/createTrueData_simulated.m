@@ -129,9 +129,9 @@ exp.PV.sem = exp.PV.eRand;
 % Data-based parameters
 exp.parameters.Caa.eRand = simulatedDataTrue.parameters.Caa.mean.*0.15; % 15% error
 exp.parameters.ELCo.eRand = simulatedDataTrue.parameters.ELCo.mean.*0.12; % 12% error
-exp.parameters.Ctot.eRand = simulatedDataTrue.parameters.Ctot.mean.*0.20; % 25%, calculated from other variables
-exp.parameters.Rtot.eRand = simulatedDataTrue.parameters.Rtot.mean.*0.082; % 12%, calculated from other variables
-exp.parameters.Emax_LV.eRand = simulatedDataTrue.parameters.Emax_LV.mean.*0.077; % 10%, calculated from other variables
+exp.parameters.Ctot.eRand = simulatedDataTrue.parameters.Ctot.mean.*0.20; % calculated from other variables
+exp.parameters.Rtot.eRand = simulatedDataTrue.parameters.Rtot.mean.*0.082; % calculated from other variables
+exp.parameters.Emax_LV.eRand = simulatedDataTrue.parameters.Emax_LV.mean.*0.077; % calculated from other variables
 
 exp.parameters.Caa.eSyst = 0; % no systematic errors
 exp.parameters.ELCo.eSyst = 0; % no systematic errors
